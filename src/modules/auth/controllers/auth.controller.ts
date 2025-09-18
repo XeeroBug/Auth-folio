@@ -21,6 +21,6 @@ export class AuthController{
 
     @Get()
     test(){
-        return 'working';
+        return 'working very nice';
     }
 }
