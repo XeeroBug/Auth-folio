@@ -23,15 +23,20 @@ export class DatabaseService {
         });
     }
 
-    async createUser(user: SignupDto): Promise<void> {
+    async createUser(user: SignupDto): Promise<string> {
         // Logic to create a user in the database
         
         const newUser = transform(user);
+        const existingUser = this.users.find(u => u.email == newUser.email);
+
+        if (existingUser) {
+            this.logger.warn(`User with email ${newUser.email} already exists.`);
+            return 'User already exists';
+        }
+
         newUser.id = this.users.length == 0 ? this.users.length + 1 : this.users[this.users.length -1].id + 1; // Simple auto-increment logic
         const addedUser: User[] = [...this.users]
-
         newUser.password = await this.hashService.hashPassword(newUser.password)
-
         addedUser.push(newUser)
 
         this.fileService.saveUsers(addedUser).then((msg) => {
@@ -41,11 +46,13 @@ export class DatabaseService {
         });
 
         this.users = [...addedUser]
+        this.logger.log(`User created: ${JSON.stringify(newUser)}`);
+        return 'User created';
     }
 
     findUserById(id: number): User | null {
         // Logic to find a user by id in the database
-        return this.users.find(user => user.id === id) || null;
+        return this.users.find(user => user.id == id) || null;
     }
 
     deleteUser(id: number): void {
@@ -62,50 +69,39 @@ export class DatabaseService {
         }
     }
 
-    updateUser(id: number, user: Partial<SignupDto>): User | null {
+    async updateUser(id: number, user: Partial<SignupDto>): Promise<User | null> {
         // Logic to update a user by id in the database
         const newUser: Partial<User> = transform(user as SignupDto);
 
-        const existingUser = this.users.find(u => u.id === id);
+        const existingUser = this.users.find(u => u.id == id);
         if (existingUser) {
-            newUser.id = id;
-            if (newUser.password !== existingUser.password && newUser.password) {
-                this.hashService.hashPassword(newUser.password).then((hashedPassword) => {
-                    newUser.password = hashedPassword;
-                }).catch((err) => {
-                    this.logger.error('Error hashing password:', err);
-                });
-            }
+            existingUser.firstName = newUser.firstName ?? existingUser.firstName;
+            existingUser.lastName = newUser.lastName ?? existingUser.lastName;
+            existingUser.email = newUser.email ?? existingUser.email;
+            existingUser.password = await this.hashService.hashPassword(newUser.password) ?? existingUser.password;
 
-            Object.assign(existingUser, newUser);
-            this.fileService.saveUsers(this.users).then((msg) => {
-                this.logger.log(msg);
-            }).catch((err) => {
-                this.logger.error('Error saving users:', err);
-            });
+            Object.assign(existingUser, existingUser);
+            const msg = await this.fileService.saveUsers(this.users)
+            this.logger.log(`UPDATE: ${msg}`);
             return existingUser;
         }
         return null;
     }   
 
     getAllUsers(): User[] {
-        // Logic to get all users from the database
         return this.users;
     }
 
     async validateUser(email: string, password: string): Promise<User> | null {
         // Logic to validate user credentials
-        const user = this.users.find(user => user.email === email);
+        const user = this.users.find(user => user.email == email);
         
         if (user) {
-            this.hashService.hashPassword(password).then((hashedPassword) => {
-                password = hashedPassword; 
-            }).catch((err) => {
-                this.logger.error('Error hashing password:', err);
-            });
+            user.password = await this.hashService.hashPassword(user.password);
         }
 
         if (user && user.password === password) {
+            this.logger.log(`User validated: ${JSON.stringify(user)}`);
             return user;
         }
         return null;
