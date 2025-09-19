@@ -1,16 +1,20 @@
 [
   {
-    "id": 1,
-    "firstName": "Ibrahim",
-    "lastName": "Tajudeen",
-    "email": "code@mail.com",
-    "password": "$2b$10$/OIy/he2zPOe2W92ba9N6uDNnstQxezowKM5E7bfSwdR./rMU9XgW"
-  },
-  {
     "id": 2,
     "firstName": "Usama",
     "lastName": "Abdulhakim",
     "email": "xerobug@mail.com",
     "password": "$2b$10$mz/UGCp/mT9O7v7z1szVeu6gcGwbT/1YLDPUG22mMiZXVnYRqXUi."
+  },
+  {
+    "id": 3,
+    "firstName": "Usama",
+    "lastName": "Abdulhakeem",
+    "email": "xeerobug@gmail.com",
+    "password": "$2b$10$UjwAOxEmX3oIdAOTbXa8wewBbnPYed29WUYgvB1ytA0.Qth2jfNGm"
+  },
+  {
+    "id": "4",
+    "lastName": "Yusuf"
   }
 ]

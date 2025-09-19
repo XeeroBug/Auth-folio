@@ -5,23 +5,29 @@ import { FileService } from './file.service';
 import { HashService } from './hash.service';
 import { SignupDto } from '../../../common/dto/types.dto';
 import { transform } from '../transformers/dtousertransformer';
+import { log } from 'console';
 
 @Injectable()
 export class DatabaseService {
-    private readonly logger = new Logger(DatabaseService.name);
-    private users: User[] = [];
+  private readonly logger = new Logger(DatabaseService.name);
+  private users: User[] = [];
 
+  constructor(
+    private readonly fileService: FileService,
+    private readonly hashService: HashService,
+  ) {
+    this.users = [];
+    fileService
+      .loadUsers()
+      .then((loadedUsers) => {
+        this.users = loadedUsers;
+        this.logger.log(`Loaded ${loadedUsers.length} users from file.`);
+      })
+      .catch((err) => {
+        this.logger.error('Error loading users:', err);
+      });
+  }
 
-    constructor(private readonly fileService: FileService, 
-        private readonly hashService: HashService) {
-        this.users = [];
-        fileService.loadUsers().then((loadedUsers) => {
-            this.users = loadedUsers;
-            this.logger.log(`Loaded ${loadedUsers.length} users from file.`);
-        }).catch((err) => {
-            this.logger.error('Error loading users:', err);
-        });
-    }
 
     async createUser(user: SignupDto): Promise<string> {
         // Logic to create a user in the database
