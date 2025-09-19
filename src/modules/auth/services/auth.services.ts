@@ -1,16 +1,17 @@
+/* eslint-disable prettier/prettier */
 import { Injectable, Logger } from '@nestjs/common';
-import { signupDto, loginDto } from '../dtos/types.dto';
+import { SignupDto, LoginDto } from 'src/common/dto/types.dto'
 
 @Injectable()
 export class AuthService {
     private readonly logger = new Logger(AuthService.name)
-  register(userDto: signupDto) {
-    this.logger.log(`user registered ${userDto}`)
+  register(userDto: SignupDto) {
+    this.logger.log(`user registered ${JSON.stringify(userDto)}`)
     return 'User registered';
   }
 
-  login(userDto: loginDto) {
-    this.logger.log(`user logged in ${userDto}`)
+  login(userDto: LoginDto) {
+    this.logger.log(`user logged in ${JSON.stringify(userDto)}`)
     return 'User logged in';
   }
 }

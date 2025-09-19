@@ -1,11 +1,12 @@
-export class signupDto {
+/* eslint-disable prettier/prettier */
+export class SignupDto {
   firstName: string;
   lastName: string;
   password: string;
   email: string;
 }
 
-export class loginDto {
+export class LoginDto {
   email: string;
   password: string;
 }
