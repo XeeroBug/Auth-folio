@@ -11,17 +11,17 @@ export class AuthController {
     ){}
 
     @Post('signup')
-    signUp(@Body() data: SignupDto) {
-        this.authService.register(data);
+    async signUp(@Body() data: SignupDto) {
+        await this.authService.register(data);
     }
 
     @Post('login')
-    login(@Body() data: LoginDto) {
-        this.authService.login(data);
+    async login(@Body() data: LoginDto) {
+        await this.authService.login(data);
     }
 
     @Get()
     test(){
-        return 'working very nice';
+        return this.authService.users();
     }
 }

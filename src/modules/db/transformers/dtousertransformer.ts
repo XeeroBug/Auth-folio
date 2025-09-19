@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { SignupDto } from 'src/common/dto/types.dto';
-import { User } from '../entities/user.entity';
+import { User } from 'src/common/entities/user.entity';
 
 //instead of using custom pipes we can use transformer functions
 //since it is not on the controller level but on the service level

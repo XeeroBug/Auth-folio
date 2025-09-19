@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { Injectable, Logger } from '@nestjs/common';
-import { User } from '../entities/user.entity';
+import { User } from 'src/common/entities/user.entity';
 import { FileService } from './file.service';
 import { HashService } from './hash.service';
 import { SignupDto } from '../../../common/dto/types.dto';
@@ -23,20 +23,14 @@ export class DatabaseService {
         });
     }
 
-    createUser(user: SignupDto): void {
+    async createUser(user: SignupDto): Promise<void> {
         // Logic to create a user in the database
         
         const newUser = transform(user);
-        newUser.id = this.users.length + 1; // Simple auto-increment logic
+        newUser.id = this.users.length == 0 ? this.users.length + 1 : this.users[this.users.length -1].id + 1; // Simple auto-increment logic
         const addedUser: User[] = [...this.users]
 
-        if(newUser.password){
-            this.hashService.hashPassword(newUser.password).then((hashedPassword) => {
-                newUser.password = hashedPassword;
-            }).catch((err) => {
-                this.logger.error('Error hashing password:', err);
-            });
-        }
+        newUser.password = await this.hashService.hashPassword(newUser.password)
 
         addedUser.push(newUser)
 
@@ -99,13 +93,13 @@ export class DatabaseService {
         return this.users;
     }
 
-    validateUser(email: string, password: string): User | null {
+    async validateUser(email: string, password: string): Promise<User> | null {
         // Logic to validate user credentials
         const user = this.users.find(user => user.email === email);
         
         if (user) {
             this.hashService.hashPassword(password).then((hashedPassword) => {
-                password = hashedPassword;
+                password = hashedPassword; 
             }).catch((err) => {
                 this.logger.error('Error hashing password:', err);
             });

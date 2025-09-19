@@ -1,12 +1,12 @@
 /* eslint-disable prettier/prettier */
 import { Injectable, Logger } from "@nestjs/common";
 import * as fs from 'fs/promises';
-import { User } from "../entities/user.entity";
+import { User } from 'src/common/entities/user.entity';
 
 @Injectable()
 export class FileService{
     private readonly logger = new Logger(FileService.name);
-    private filePath: string = '../data/users.json';
+    private filePath: string = 'src/modules/db/data/users.json';
 
     constructor() {
         // Ensure the data directory exists
@@ -28,7 +28,7 @@ export class FileService{
     }
 
     async saveUsers(users: User[]): Promise<string> {
-        await fs.writeFile(this.filePath, JSON.stringify(users));
+        await fs.writeFile(this.filePath, JSON.stringify(users, null, 2));
         this.logger.log(`Users saved to ${this.filePath}`);
         return `Users saved to ${this.filePath}`;
     }
