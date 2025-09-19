@@ -50,20 +50,16 @@ export class DatabaseService {
         return 'User created';
     }
 
-    findUserById(id: number): User | null {
+    async findUserById(id: number): Promise<User | null> {
         // Logic to find a user by id in the database
-        return this.users.find(user => user.id == id) || null;
+        return Promise.resolve(this.users.find(user => user.id === id) || null);
     }
 
-    deleteUser(id: number): void {
+    async deleteUser(id: number): Promise<void> {
         // Logic to delete a user by id in the database
         const prevLength: number = this.users.length;
         this.users = this.users.filter(user => user.id !== id);
-        this.fileService.saveUsers(this.users).then((msg) => {
-            this.logger.log(msg);
-        }).catch((err) => {
-            this.logger.error('Error saving users:', err);
-        });
+        await this.fileService.saveUsers(this.users);
         if (this.users.length === prevLength) {
             throw new Error('User not found');
         }
@@ -78,7 +74,7 @@ export class DatabaseService {
             existingUser.firstName = newUser.firstName ?? existingUser.firstName;
             existingUser.lastName = newUser.lastName ?? existingUser.lastName;
             existingUser.email = newUser.email ?? existingUser.email;
-            existingUser.password = await this.hashService.hashPassword(newUser.password) ?? existingUser.password;
+            existingUser.password = (newUser.password) ? (await this.hashService.hashPassword(newUser.password) ?? existingUser.password) : existingUser.password;
 
             Object.assign(existingUser, existingUser);
             const msg = await this.fileService.saveUsers(this.users)
@@ -88,11 +84,11 @@ export class DatabaseService {
         return null;
     }   
 
-    getAllUsers(): User[] {
-        return this.users;
+    async getAllUsers(): Promise<User[]> {
+        return Promise.resolve(this.users);
     }
 
-    async validateUser(email: string, password: string): Promise<User> | null {
+    async validateUser(email: string, password: string): Promise<User | null> {
         // Logic to validate user credentials
         const user = this.users.find(user => user.email == email);
         

@@ -1,12 +1,11 @@
 /* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
 import { AuthController } from './controllers/auth.controller';
-import { AuthService } from './services/auth.services';
 import { DatabaseModule } from '../db/db.module';
 
 @Module({
   imports: [DatabaseModule],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [],
 })
 export class AuthModule {}
