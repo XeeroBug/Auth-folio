@@ -4,21 +4,6 @@
     "firstName": "Usama",
     "lastName": "Abdulhakeem",
     "email": "xerobug@mail.com",
-<<<<<<< HEAD
     "password": "$2b$10$QXngf6x4iExnRN2WtTsmwunRNXCw73LbsLYBcjOaxeWVe9r93CFYq"
-=======
-    "password": "$2b$10$mz/UGCp/mT9O7v7z1szVeu6gcGwbT/1YLDPUG22mMiZXVnYRqXUi."
-  },
-  {
-    "id": 3,
-    "firstName": "Usama",
-    "lastName": "Abdulhakeem",
-    "email": "xeerobug@gmail.com",
-    "password": "$2b$10$UjwAOxEmX3oIdAOTbXa8wewBbnPYed29WUYgvB1ytA0.Qth2jfNGm"
-  },
-  {
-    "id": "4",
-    "lastName": "Yusuf"
->>>>>>> 7aecc86e0de9a506fa79c4a81382b3bca658b2c8
   }
 ]
