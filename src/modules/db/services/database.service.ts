@@ -1,10 +1,11 @@
 /* eslint-disable prettier/prettier */
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { User } from 'src/common/entities/user.entity';
 import { FileService } from './file.service';
 import { HashService } from './hash.service';
 import { SignupDto } from '../../../common/dto/types.dto';
 import { transform } from '../transformers/dtousertransformer';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class DatabaseService {
@@ -13,7 +14,8 @@ export class DatabaseService {
 
 
     constructor(private readonly fileService: FileService, 
-        private readonly hashService: HashService) {
+        private readonly hashService: HashService, 
+        private readonly jwtService: JwtService) {
         this.users = [];
         fileService.loadUsers().then((loadedUsers) => {
             this.users = loadedUsers;
@@ -52,15 +54,15 @@ export class DatabaseService {
 
     async findUserById(id: number): Promise<User | null> {
         // Logic to find a user by id in the database
-        return Promise.resolve(this.users.find(user => user.id === id) || null);
+        return Promise.resolve(this.users.find(user => user.id == id) || null);
     }
 
     async deleteUser(id: number): Promise<void> {
         // Logic to delete a user by id in the database
         const prevLength: number = this.users.length;
-        this.users = this.users.filter(user => user.id !== id);
+        this.users = this.users.filter(user => user.id != id);
         await this.fileService.saveUsers(this.users);
-        if (this.users.length === prevLength) {
+        if (this.users.length == prevLength) {
             throw new Error('User not found');
         }
     }
@@ -88,18 +90,22 @@ export class DatabaseService {
         return Promise.resolve(this.users);
     }
 
-    async validateUser(email: string, password: string): Promise<User | null> {
+    async validateUser(email: string, password: string): Promise<{ accessToken: string } | null> {
         // Logic to validate user credentials
         const user = this.users.find(user => user.email == email);
+        const passwordValid = await this.hashService.comparePasswords(password, user?.password ?? '');
         
-        if (user) {
-            user.password = await this.hashService.hashPassword(user.password);
+        if (!user && !passwordValid) {
+            this.logger.warn(`Invalid login credientials`);
+            throw new UnauthorizedException('Invalid credentials');
         }
-
-        if (user && user.password === password) {
-            this.logger.log(`User validated: ${JSON.stringify(user)}`);
-            return user;
-        }
-        return null;
+        
+        const payload = { email: user?.email, sub: user?.id };
+        const token = await this.jwtService.signAsync(payload);
+        
+        this.logger.log(`User validated: ${JSON.stringify(user)}`);
+        return {
+            accessToken: token
+        };
     }
 }

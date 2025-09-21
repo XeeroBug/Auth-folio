@@ -5,5 +5,12 @@
     "lastName": "Abdulhakeem",
     "email": "xerobug@mail.com",
     "password": "$2b$10$QXngf6x4iExnRN2WtTsmwunRNXCw73LbsLYBcjOaxeWVe9r93CFYq"
+  },
+  {
+    "id": 3,
+    "firstName": "Usama",
+    "lastName": "Abdulhakeem",
+    "email": "ahmadaliyu@gmail.com",
+    "password": "$2b$10$7NVZyg5858hINJtjFzebDOx8IIPxQ2vmCwUMIzRJhFbkdmL3yIgTK"
   }
 ]
